@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 import os
 import json
+import logging
 from dotenv import load_dotenv
 from eth_account import Account
 from eth_account.messages import encode_defunct
 from cerebras.cloud.sdk import Cerebras
 from fastapi import FastAPI
+from pyngrok import ngrok
 
 app = FastAPI()
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -18,6 +24,12 @@ if not mnemonic:
     raise ValueError("MNEMONIC not set")
 Account.enable_unaudited_hdwallet_features()
 account = Account.from_mnemonic(mnemonic)
+
+# Set up ngrok
+ngrok.set_auth_token(os.environ.get("NGROK_AUTHTOKEN"))
+public_url = ngrok.connect(80)
+print(f"Public URL: {public_url}")
+logger.info(f"Public URL: {public_url}")
 
 def run_structured_analysis(prompt: str, **kwargs) -> dict:
     """Run AI analysis that returns executable Python code building a result dict"""
@@ -136,11 +148,17 @@ async def judge(data: dict):
 
 @app.get("/")
 async def root():
-    return {
-        "message": "Water Judge Service",
-        "endpoints": {
-            "/judge": "Analyze water sample data (measurements)",
-            "/analyze": "Analyze scene description (visual)"
-        },
-        "judge_address": account.address
-    }
+    print("Root endpoint called")
+    logger.info("Root endpoint called")
+    try:
+        return {
+            "message": "Water Judge Service",
+            "endpoints": {
+                "/judge": "Analyze water sample data (measurements)",
+                "/analyze": "Analyze scene description (visual)"
+            },
+            "judge_address": account.address
+        }
+    except Exception as e:
+        logger.error(f"Error in root endpoint: {str(e)}")
+        raise
