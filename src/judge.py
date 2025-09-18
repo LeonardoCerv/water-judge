@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Simplified Water Judge API - Single File Solution
-Generates comprehensive water quality analysis with detailed explanations
-"""
-
 import os
 import json
 import re
@@ -14,122 +8,42 @@ from cerebras.cloud.sdk import Cerebras
 from fastapi import FastAPI
 import uvicorn
 import logging
-
-# Additional imports for image analysis
-import io
 import hashlib
-import time
-from contextlib import contextmanager
 from typing import Dict, Any, List
-
-# Plain-text reference ranges for strip analytes (for qualitative guidance only)
-_REFERENCE_RANGES_TEXT = (
-    "Total Alkalinity: 40 - 240 mg/L\n"
-    "pH: 6.8 - 8.4\n"
-    "Hardness: TBD (To Be Determined)\n"
-    "Hydrogen Sulfide: 0 mg/L\n"
-    "Iron: 0 - 0.3 mg/L\n"
-    "Copper: 0 - 1 mg/L\n"
-    "Lead: 0 - 15 µg/L\n"
-    "Manganese: 0 - 0.1 mg/L\n"
-    "Total Chlorine: 0 - 3 mg/L\n"
-    "Free Chlorine: 0 - 3 mg/L\n"
-    "Nitrate: 0 - 10 mg/L\n"
-    "Nitrite: 0 - 1 mg/L\n"
-    "Sulfate: 0 - 200 mg/L\n"
-    "Zinc: 0 - 5 mg/L\n"
-    "Sodium Chloride: 0 - 250 mg/L\n"
-    "Fluoride: 0 - 4 mg/L"
-)
-
-# Best-effort formatter to convert any strip-related content to a plain-text summary
-def _format_strip_context_text(obj: Dict[str, Any] | None) -> str:
-    try:
-        if not isinstance(obj, dict):
-            return ""
-        # Accept preformatted text if provided
-        pre = (
-            obj.get('strip_text')
-            or (obj.get('strip') or {}).get('text')
-            or (obj.get('strip') or {}).get('analysis_text')
-            or (obj.get('strip') or {}).get('analysis')
-        )
-        if isinstance(pre, str) and pre.strip():
-            return pre.strip()
-
-        # Otherwise flatten any values into a readable single-line string
-        values = (obj.get('strip') or {}).get('values')
-        if isinstance(values, dict) and values:
-            parts: List[str] = []
-            for key, val in values.items():
-                try:
-                    parts.append(f"{str(key)}: {str(val)}")
-                except Exception:
-                    continue
-            if parts:
-                return "Strip test results — " + "; ".join(parts)
-        return ""
-    except Exception:
-        return ""
 
 # Setup
 load_dotenv()
 app = FastAPI(title="Water Judge", description="AI-powered water quality analysis")
 logger = logging.getLogger(__name__)
 
-# Initialize wallet
+# Initialize Ethereum wallet for decision signing
 mnemonic = os.environ.get("MNEMONIC")
 if not mnemonic:
     raise ValueError("MNEMONIC environment variable required")
 Account.enable_unaudited_hdwallet_features()
 account = Account.from_mnemonic(mnemonic)
 
-# Reuse singletons to avoid re-initialization overhead on each request
-
-
-@contextmanager
-def suppress_logs_and_output():
-    """
-    No-op: allow normal logging and propagation.
-    """
-    yield
-
-
-@contextmanager
-def suppress_stdout_stderr():
-    """
-    No-op: keep stdout and stderr visible.
-    """
-    yield
-
-
+# Cache for finalized reports to reduce AI calls
 _FINALIZE_CACHE = {}
 _FINALIZE_ORDER = []
 
 def finalize_report(combined: Dict[str, Any], use_case: str) -> Dict[str, Any]:
-    """
-    Use Cerebras to synthesize concise final JSON from combined analysis + user use-case.
-    Returns a Python dict with the exact keys required by the UI.
-    """
+    """Combines water analysis data with the intended use case to generate a final AI-synthesized report in the required format."""
     combined_json = json.dumps(combined, ensure_ascii=False)
+    cache_key = hashlib.sha256((combined_json + "\n" + (use_case or '')).encode('utf-8')).hexdigest()
+    cached = _FINALIZE_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
 
-    # Create focused input for Cerebras
-    input_parts = []
-    input_parts.append(f"Water analysis data: {combined_json}")
-    input_parts.append(f"Intended use case: {use_case}")
-
-    # Extract location hint if available
-    location_hint = ""
+    # Build input for AI analysis
+    input_parts = [f"Water analysis data: {combined_json}", f"Intended use case: {use_case}"]
     if isinstance(combined, dict) and combined.get('location', {}).get('hint'):
-        location_hint = combined['location']['hint']
-        input_parts.append(f"Location context: {location_hint}")
-
+        input_parts.append(f"Location context: {combined['location']['hint']}")
     combined_input = ". ".join(input_parts)
 
-    # Use Cerebras for finalization
     result = analyze_water(combined_input, use_case)
 
-    # Transform Cerebras result to the expected format
+    # Transform AI result to the expected output format
     final_result = {
         'water_health_percent': f"{result.get('health_percentage', 50)}%",
         'current_water_use_cases': result.get('current_safety_analysis', 'Use with caution; treat before sensitive uses.'),
@@ -137,13 +51,7 @@ def finalize_report(combined: Dict[str, Any], use_case: str) -> Dict[str, Any]:
         'purify_for_selected_use': result.get('purification_instructions', 'Filter and disinfect before your selected use.'),
     }
 
-    # Simple LRU cache
-    cache_key = hashlib.sha256((combined_json + "\n" + (use_case or '')).encode('utf-8')).hexdigest()
-    cached = _FINALIZE_CACHE.get(cache_key)
-    if cached is not None:
-        return cached
-
-    # Update cache
+    # Cache result to avoid redundant AI calls
     _FINALIZE_CACHE[cache_key] = final_result
     _FINALIZE_ORDER.append(cache_key)
     if len(_FINALIZE_ORDER) > 32:
@@ -152,12 +60,8 @@ def finalize_report(combined: Dict[str, Any], use_case: str) -> Dict[str, Any]:
 
     return final_result
 
-
 def generate_detailed_plan(final_result: Dict[str, Any], analysis: Dict[str, Any] | None = None) -> List[Dict[str, str]]:
-    """
-    Generate a concise purification plan with 3-5 practical steps
-    """
-    # Build context for Cerebras
+    """Generates a list of 2-3 practical purification steps based on the final analysis, using AI to tailor recommendations."""
     ctx = {
         'final': final_result or {},
         'waterbody': (analysis or {}).get('waterbody') if isinstance(analysis, dict) else None,
@@ -165,36 +69,27 @@ def generate_detailed_plan(final_result: Dict[str, Any], analysis: Dict[str, Any
     }
     ctx_json = json.dumps(ctx, ensure_ascii=False)
 
-    # Create focused input for concise plan
-    input_parts = []
-    input_parts.append(f"Context: {ctx_json}")
-    input_parts.append("Generate 2-3 practical purification steps.")
-    input_parts.append("Each step should have a clear title and brief description.")
-    input_parts.append("Focus on effective, realistic methods.")
-
+    input_parts = [
+        f"Context: {ctx_json}",
+        "Generate 2-3 practical purification steps.",
+        "Each step should have a clear title and brief description.",
+        "Focus on effective, realistic methods."
+    ]
     combined_input = ". ".join(input_parts)
 
-    # Use Cerebras to generate concise plan
     result = analyze_water(combined_input, final_result.get('selected_use', 'drinking'))
-
-    # Parse the purification instructions into steps
     instructions = result.get('purification_instructions', '')
 
-    # Simple parsing - split by numbered steps or common delimiters
     steps = []
     if instructions:
-        # Try to split by step indicators
-        import re
         step_pattern = r'(?:Step\s*\d+|^\d+\.|\n\s*\d+\.|\n\s*[-*]\s*)'
         parts = re.split(step_pattern, instructions)
-
+        # Parse AI-generated instructions into structured steps
         for i, part in enumerate(parts):
-            if part.strip() and len(part.strip()) > 10:  # Only add meaningful steps
-                title = f"Step {i+1}"
-                description = part.strip()
-                steps.append({'title': title, 'description': description})
+            if part.strip() and len(part.strip()) > 10:
+                steps.append({'title': f"Step {i+1}", 'description': part.strip()})
 
-    # Fallback if parsing fails
+    # Use fallback steps if AI parsing yields insufficient results
     if not steps or len(steps) < 2:
         steps = [
             {'title': 'Filter water', 'description': 'Use clean cloth or filter to remove visible particles.'},
@@ -202,16 +97,13 @@ def generate_detailed_plan(final_result: Dict[str, Any], analysis: Dict[str, Any
             {'title': 'Safe storage', 'description': 'Store in clean containers, avoid recontamination.'},
         ]
 
-    return steps[:3]  # Limit to 3 steps max
-
+    return steps[:3]
 
 def analyze_water(input_data: str, use_case: str = "drinking") -> dict:
-    """
-    Generate concise, actionable water analysis focused on the 4 required output fields
-    """
+    """Queries the AI model with water data and use case to obtain health percentage, safety analysis, risks, and purification instructions."""
     client = Cerebras(api_key=os.environ.get("CEREBRAS_API_KEY"))
 
-    # Create focused, concise prompt for the 4 required fields
+    # Construct detailed prompt for AI to perform tailored water analysis
     prompt = f"""
     You are a water quality expert. Analyze the SPECIFIC water data provided and give a tailored assessment.
 
@@ -244,12 +136,10 @@ def analyze_water(input_data: str, use_case: str = "drinking") -> dict:
         )
 
         ai_response = response.choices[0].message.content
-
-        # Extract JSON from response
+        # Extract JSON from AI response
         json_match = re.search(r'\{.*\}', ai_response, re.DOTALL)
         if json_match:
-            result = json.loads(json_match.group())
-            return result
+            return json.loads(json_match.group())
         else:
             return create_concise_fallback(input_data, use_case)
 
@@ -258,7 +148,7 @@ def analyze_water(input_data: str, use_case: str = "drinking") -> dict:
         return create_concise_fallback(input_data, use_case, error=str(e))
 
 def create_concise_fallback(input_data: str, use_case: str, error: str = None) -> dict:
-    """Create concise fallback response when AI analysis fails"""
+    """Returns a default analysis response when AI processing fails, providing conservative recommendations."""
     return {
         "health_percentage": 50,
         "current_safety_analysis": f"Unable to fully assess safety for {use_case} use. Exercise caution and consider professional testing. Basic filtration and disinfection recommended.",
@@ -267,7 +157,7 @@ def create_concise_fallback(input_data: str, use_case: str, error: str = None) -
     }
 
 def sign_decision(decision_text: str) -> str:
-    """Sign water quality decision with wallet"""
+    """Signs the analysis result with an Ethereum wallet to enable cryptographic verification."""
     message = encode_defunct(text=decision_text)
     signed = account.sign_message(message)
     return signed.signature.hex()
@@ -275,7 +165,7 @@ def sign_decision(decision_text: str) -> str:
 # API Endpoints
 @app.get("/")
 async def root():
-    """Service information"""
+    """Returns basic API metadata including service info and judge address."""
     return {
         "service": "Water Judge API",
         "version": "2.0-simplified", 
@@ -285,22 +175,13 @@ async def root():
 
 @app.post("/judge")
 async def judge_endpoint(data: dict):
-    """
-    Judge endpoint for water analysis.
-    Receives structured JSON data and returns final water quality summary.
-    """
+    """Processes incoming water analysis data, generates quality report and purification plan, then signs the result."""
     try:
-        # The input data is already the combined analysis data
         combined = data
         use_case = data.get("use_case", "drinking")
         
-        # Use finalize_report to get the final summary
         final_result = finalize_report(combined, use_case)
-        
-        # Generate detailed purification plan
         plan = generate_detailed_plan(final_result, combined)
-        
-        # Sign the decision
         signature = sign_decision(json.dumps(final_result, ensure_ascii=False))
         
         return {
@@ -319,17 +200,15 @@ async def judge_endpoint(data: dict):
         }
 
 if __name__ == "__main__":
-    # Setup logging
     logging.basicConfig(level=logging.INFO)
     
-    # Validate environment
+    # Validate required environment variables before starting
     required_vars = ["MNEMONIC", "CEREBRAS_API_KEY"]
     for var in required_vars:
         if not os.environ.get(var):
             logger.error(f"{var} environment variable is required!")
             exit(1)
     
-    # Configuration
     port = int(os.environ.get("PORT", 8000))
     host = os.environ.get("HOST", "0.0.0.0")
     
@@ -337,5 +216,4 @@ if __name__ == "__main__":
     logger.info(f"⚡ Judge Address: {account.address}")
     logger.info("📝 Endpoints: GET / | POST /judge")
     
-    # Start server
     uvicorn.run(app, host=host, port=port, log_level="info")
