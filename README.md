@@ -1,15 +1,16 @@
 # Water Judge - EigenLabs Challenge
 
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Uvicorn](https://img.shields.io/badge/Uvicorn-000000?style=for-the-badge&logo=uvicorn&logoColor=white)](https://www.uvicorn.org/)
-[![Cerebras](https://img.shields.io/badge/Cerebras_AI-FF6B35?style=for-the-badge&logo=ai&logoColor=white)](https://cerebras.ai/)
-[![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=for-the-badge&logo=ethereum&logoColor=white)](https://ethereum.org/)
-[![EigenLabs](https://img.shields.io/badge/EigenLabs-DA70D6?style=for-the-badge&logo=ethereum&logoColor=white)](https://www.eigenlabs.org/)
-[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-brown?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Views](https://badges.0xleo.dev/badge/dynamic/viewers?repo=leonardocerv/water-judge&edges=round&text=repository%20views&bgColor=white&textColor=blue&v=1234567890)](https://github.com/LeonardoCerv/ez-badges)
 
-This is a simple API that checks water quality using AI and makes sure the results are trustworthy with blockchain technology from EigenLabs. Imagine you have a water test strip with numbers like pH or chlorine levels. You send that data to this API, and it tells you if the water is safe for drinking, bathing, or other uses. It also gives tips on how to clean the water if needed.
+[![Python](https://badges.0xleo.dev/badge?text=Python&bgColor=3776AB&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:python)](https://www.python.org/)
+[![FastAPI](https://badges.0xleo.dev/badge?text=FastAPI&bgColor=009688&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:fastapi)](https://fastapi.tiangolo.com/)
+[![Cerebras](https://badges.0xleo.dev/badge?text=cerebras%20API&bgColor=FFFFFF&textColor=black&icon=https://cloud.cerebras.ai/images/logo/cerebras-logo-black.svg)](https://cerebras.ai/)
+[![EigenLabs](https://badges.0xleo.dev/badge?text=EigenCloud&bgColor=DA70D6&textColor=FFFFFF&iconColor=FFFFFF&icon=https://www.eigencloud.xyz/images/Eigen_Cloud_Logo.png)](https://www.eigenlabs.org/)
+[![Ethereum](https://badges.0xleo.dev/badge?text=Ethereum&bgColor=3C3C3D&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:ethereum)](https://ethereum.org/)
+[![Docker](https://badges.0xleo.dev/badge?text=Docker&bgColor=2496ED&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:docker)](https://www.docker.com/)
+[![License](https://badges.0xleo.dev/badge?text=License&bgColor=750014&textColor=FFFFFF&iconColor=FFFFFF&icon=https://cdn.uconnectlabs.com/wp-content/themes/uConnect_MIT/images/mit-capd-left.svg?v=2)](https://opensource.org/licenses/MIT)
+
+Imagine you have a water test strip with numbers like pH or chlorine levels. You send that data to this API, and it tells you if the water is safe for drinking, bathing, or other uses. It also gives tips on how to clean the water if needed. 
 
 The special part is EigenLabs. It uses Ethereum (a type of blockchain) to sign each decision, like putting a digital seal on the result. This seal proves the result is real and hasn't been changed. No one can fake it because it's checked on the blockchain.
 
