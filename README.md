@@ -4,9 +4,8 @@
 
 [![Python](https://badges.0xleo.dev/badge?text=Python&bgColor=3776AB&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:python)](https://www.python.org/)
 [![FastAPI](https://badges.0xleo.dev/badge?text=FastAPI&bgColor=009688&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:fastapi)](https://fastapi.tiangolo.com/)
-[![Cerebras](https://badges.0xleo.dev/badge?text=cerebras%20API&bgColor=FFFFFF&textColor=black&icon=https://cloud.cerebras.ai/images/logo/cerebras-logo-black.svg)](https://cerebras.ai/)
+[![Cerebras](https://badges.0xleo.dev/badge?text=AI&bgColor=FFFFFF&textColor=black&icon=https://cloud.cerebras.ai/images/logo/cerebras-logo-black.svg)](https://cerebras.ai/)
 [![EigenLabs](https://badges.0xleo.dev/badge?text=EigenCloud&bgColor=DA70D6&textColor=FFFFFF&iconColor=FFFFFF&icon=https://www.eigencloud.xyz/images/Eigen_Cloud_Logo.png)](https://www.eigenlabs.org/)
-[![Ethereum](https://badges.0xleo.dev/badge?text=Ethereum&bgColor=3C3C3D&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:ethereum)](https://ethereum.org/)
 [![Docker](https://badges.0xleo.dev/badge?text=Docker&bgColor=2496ED&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:docker)](https://www.docker.com/)
 [![License](https://badges.0xleo.dev/badge?text=License&bgColor=750014&textColor=FFFFFF&iconColor=FFFFFF&icon=https://cdn.uconnectlabs.com/wp-content/themes/uConnect_MIT/images/mit-capd-left.svg?v=2)](https://opensource.org/licenses/MIT)
 
