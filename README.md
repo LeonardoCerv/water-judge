@@ -1,13 +1,15 @@
-# Water Judge - EigenLabs Challenge
+# Clearly (Water Judge)
 
-[![Views](https://badges.0xleo.dev/badge/dynamic/viewers?repo=leonardocerv/water-judge&edges=round&text=repository%20views&bgColor=white&textColor=blue&v=1234567890)](https://github.com/LeonardoCerv/ez-badges)
+**2nd place, HackMIT 2025 sponsor challenge (EigenLabs track).** Verifiable water-quality assessments: a verification agent cross-checks geolocation against test strips parsed with computer vision, and every verdict is signed on Ethereum.
 
-[![Python](https://badges.0xleo.dev/badge?text=Python&bgColor=3776AB&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:python)](https://www.python.org/)
-[![FastAPI](https://badges.0xleo.dev/badge?text=FastAPI&bgColor=009688&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:fastapi)](https://fastapi.tiangolo.com/)
-[![Cerebras](https://badges.0xleo.dev/badge?text=AI&bgColor=FFFFFF&textColor=black&icon=https://cloud.cerebras.ai/images/logo/cerebras-logo-black.svg)](https://cerebras.ai/)
-[![EigenLabs](https://badges.0xleo.dev/badge?text=EigenCloud&bgColor=DA70D6&textColor=FFFFFF&iconColor=FFFFFF&icon=https://www.eigencloud.xyz/images/Eigen_Cloud_Logo.png)](https://www.eigenlabs.org/)
-[![Docker](https://badges.0xleo.dev/badge?text=Docker&bgColor=2496ED&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:docker)](https://www.docker.com/)
-[![License](https://badges.0xleo.dev/badge?text=License&bgColor=750014&textColor=FFFFFF&iconColor=FFFFFF&icon=https://cdn.uconnectlabs.com/wp-content/themes/uConnect_MIT/images/mit-capd-left.svg?v=2)](https://opensource.org/licenses/MIT)
+[![Views](https://ez-badges.vercel.app/badge/dynamic/viewers?repo=leonardocerv/water-judge&edges=round&text=repository%20views&bgColor=white&textColor=blue&v=1234567890)](https://github.com/LeonardoCerv/ez-badges)
+
+[![Python](https://ez-badges.vercel.app/badge?text=Python&bgColor=3776AB&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:python)](https://www.python.org/)
+[![FastAPI](https://ez-badges.vercel.app/badge?text=FastAPI&bgColor=009688&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:fastapi)](https://fastapi.tiangolo.com/)
+[![Cerebras](https://ez-badges.vercel.app/badge?text=AI&bgColor=FFFFFF&textColor=black&icon=https://cloud.cerebras.ai/images/logo/cerebras-logo-black.svg)](https://cerebras.ai/)
+[![EigenLabs](https://ez-badges.vercel.app/badge?text=EigenCloud&bgColor=DA70D6&textColor=FFFFFF&iconColor=FFFFFF&icon=https://www.eigencloud.xyz/images/Eigen_Cloud_Logo.png)](https://www.eigenlabs.org/)
+[![Docker](https://ez-badges.vercel.app/badge?text=Docker&bgColor=2496ED&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:docker)](https://www.docker.com/)
+[![License](https://ez-badges.vercel.app/badge?text=License&bgColor=750014&textColor=FFFFFF&iconColor=FFFFFF&icon=https://cdn.uconnectlabs.com/wp-content/themes/uConnect_MIT/images/mit-capd-left.svg?v=2)](https://opensource.org/licenses/MIT)
 
 Imagine you have a water test strip with numbers like pH or chlorine levels. You send that data to this API, and it tells you if the water is safe for drinking, bathing, or other uses. It also gives tips on how to clean the water if needed. 
 
