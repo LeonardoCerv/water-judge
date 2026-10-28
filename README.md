@@ -11,6 +11,8 @@
 [![Docker](https://ez-badges.vercel.app/badge?text=Docker&bgColor=2496ED&textColor=FFFFFF&iconColor=FFFFFF&icon=simple-icons:docker)](https://www.docker.com/)
 [![License](https://ez-badges.vercel.app/badge?text=License&bgColor=750014&textColor=FFFFFF&iconColor=FFFFFF&icon=https://cdn.uconnectlabs.com/wp-content/themes/uConnect_MIT/images/mit-capd-left.svg?v=2)](https://opensource.org/licenses/MIT)
 
+![Swagger UI of the Clearly API with the POST /judge endpoint expanded](docs/screenshots/swagger.jpg)
+
 Imagine you have a water test strip with numbers like pH or chlorine levels. You send that data to this API, and it tells you if the water is safe for drinking, bathing, or other uses. It also gives tips on how to clean the water if needed. 
 
 The special part is EigenLabs. It uses Ethereum (a type of blockchain) to sign each decision, like putting a digital seal on the result. This seal proves the result is real and hasn't been changed. No one can fake it because it's checked on the blockchain.
